@@ -35,8 +35,12 @@ def Kolmogorov_distance(sample, normal):
     return stat.ks_2samp(sample, normal, method="asymp").statistic
 
 
+#def Stein_bound(B, sigma):
+#    return 2.**(7. / 2.) * 3.**(-3. / 4.) * M**(3. / 16.) * B**.25 * sigma**(-.75)
+
 def Stein_bound(B, sigma):
-    return 2.**(7. / 2.) * 3.**(-3. / 4.) * M**(3. / 16.) * B**.25 * sigma**(-.75)
+    tau = 1.0 if M == 1 else (variance - covariance) / sigma**2
+    return 2.**(13. / 2.) * 3.**(-3. / 4.) * M**(9. / 16.) * B**.25 * sigma**(-.75) * tau**(-3. / 8.)
 
 
 for n_id, n in enumerate(n_list):
