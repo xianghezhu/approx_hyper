@@ -40,9 +40,11 @@ def Poisson_bound(M, prob, n, k):
                 + (M - 1) * comb(n - 2, k - 2) * prob * (1. + prob))
 
 
-def Normal_bound(B, sigma):
-    return 2.**(7. / 2.) * 3.**(-3. / 4.) * B**.25 * sigma**(-.75)
+#def Normal_bound(B, sigma):
+#    return 2.**(7. / 2.) * 3.**(-3. / 4.) * B**.25 * sigma**(-.75)
 
+def Normal_bound(B, sigma):
+    return 2.**(13. / 2.) * 3.**(-3. / 4.) * B**.25 * sigma**(-.75)
 
 sizes = np.loadtxt(raw / "contact-primary-school-nverts.txt", dtype=int)
 vertices = np.loadtxt(raw / "contact-primary-school-simplices.txt", dtype=int)
@@ -134,8 +136,10 @@ for case, (name, node_ids) in enumerate([("School_all", all_nodes),
         B_max += 4. * app3_M / 3. * (comb(n - 1, k - 1)
                  + 2 * app3_M * comb(n - 2, k - 2)
                  + app3_M**2 * nk3) * prob * (1. - prob)
-    app3_bound = (2.**(7. / 2.) * 3.**(-3. / 4.)
-                  * app3_M**(3. / 16.) * B_max**.25 * sigma_max**(-.75))
+    tau_max = 1.0 if app3_M == 1 else (variance - covariance) / sigma_max**2
+    app3_bound = 2.**(13. / 2.) * 3.**(-3. / 4.) * app3_M**(9. / 16.) * B_max**.25 * sigma_max**(-.75) * tau_max**(-3. / 8.)
+    #app3_bound = (2.**(7. / 2.) * 3.**(-3. / 4.)
+    #              * app3_M**(3. / 16.) * B_max**.25 * sigma_max**(-.75))
 
     normal_joint = rng.standard_normal((app3_itr, app3_M)) @ np.linalg.cholesky(cov_matrix).T / sigma_max
     normal_max = normal_joint.max(axis=1)
