@@ -142,12 +142,17 @@ for case, (name, node_ids) in enumerate([("School_all", all_nodes),
     #              * app3_M**(3. / 16.) * B_max**.25 * sigma_max**(-.75))
 
     normal_joint = rng.standard_normal((app3_itr, app3_M)) @ np.linalg.cholesky(cov_matrix).T / sigma_max
-    normal_max = normal_joint.max(axis=1)
+    normal_max = np.sort(normal_joint.max(axis=1))
     sample_max = (app3_joint.max(axis=1) - mean) / sigma_max
-    critical = np.quantile(normal_max, 1 - alpha)
-    rejection_rate = np.mean(sample_max > critical)
+    pvalue = (1. + app3_itr - np.searchsorted(normal_max, sample_max, side="left")) / (app3_itr + 1.)
+    rejection_rate = np.mean(pvalue <= alpha)
+    pvalue_mean = float(pvalue.mean())
+    pvalue_halfwidth = float(stat.t.ppf(.975, groups - 1) * pvalue.std(ddof=1) / np.sqrt(groups))
     print(name, "Application 3", "M =", app3_M, "observations =", groups,
           "Gaussian samples =", app3_itr,
           "max KS distance =", round(Kolmogorov_distance(sample_max, normal_max), 8),
           "theoretical bound =", round(app3_bound, 8),
           "rejection rate =", round(float(rejection_rate), 8))
+    print(name, "Application 3 p-value mean =", round(pvalue_mean, 8),
+          "conditional sampling 95% t CI =",
+          (round(pvalue_mean - pvalue_halfwidth, 8), round(pvalue_mean + pvalue_halfwidth, 8)))

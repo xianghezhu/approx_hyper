@@ -62,9 +62,8 @@ np.fill_diagonal(cov_matrix, variance)
 normal = np.sort(rng.standard_normal(normal_itr))
 normal_joint = rng.standard_normal((app3_itr, M)) @ np.linalg.cholesky(cov_matrix).T / sigma_max
 normal_max = np.sort(normal_joint.max(axis=1))
-critical = np.quantile(normal_max, 1 - alpha)
 possible_edges = [np.array(list(combinations(range(n), k))) for k in k_list]
-results = np.zeros((itr, 3))
+results = np.zeros((itr, 4))
 
 for repeat in range(itr):
     degree = np.zeros(n, dtype=int)
@@ -75,12 +74,14 @@ for repeat in range(itr):
     sample_joint = degree[poisson_nodes]
     sample_normal = (degree - mean) / sigma
     sample_max = (sample_joint.max(axis=1) - mean) / sigma_max
-    rejection_rate = np.mean(sample_max > critical)
+    pvalue = (1. + app3_itr - np.searchsorted(normal_max, sample_max, side="left")) / (app3_itr + 1.)
+    rejection_rate = np.mean(pvalue <= alpha)
     results[repeat] = [Kolmogorov_distance(sample_normal, normal),
                        Kolmogorov_distance(sample_max, normal_max),
-                       rejection_rate]
+                       pvalue.mean(), rejection_rate]
 
-labels = ["normal_KS", "Application 3 max_KS", "Application 3 rejection_rate"]
+labels = ["normal_KS", "Application 3 max_KS",
+          "Application 3 pvalue_mean", "Application 3 rejection_rate"]
 for label, values in zip(labels, results.T):
     lower, upper = np.quantile(values, [0.025, 0.975])
     print("5A_both", label, "mean =", round(float(values.mean()), 8),
