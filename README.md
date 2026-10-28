@@ -1,5 +1,9 @@
 # approx_hyper
-Code for Approximating Distributions on Vertex Degrees in Random Hypergraphs via Stein’s Method.
+Code for the paper 
+Approximating Distributions on Vertex Degrees in Random Hypergraphs via Stein’s Method
+co-authored by 
+Xianghe Zhu, Wenkai Xu,  and Gesine Reinert 
+
 
 
 ## Simulation
