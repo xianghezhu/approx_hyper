@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Class 5A: ER simulation means and central 95% intervals."""
+"""
+@author: xianghezhu
+"""
+
+# Class 5A: ER simulation means and central 95% intervals.
 
 from pathlib import Path
 from math import comb
